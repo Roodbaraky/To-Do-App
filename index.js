@@ -114,25 +114,26 @@ list.addEventListener('click', (e) => {
         let p = e.target.parentElement.parentElement.firstElementChild;
         const btnId = e.target.dataset.id;
         const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
-        try {
+        if(newArr-1 >=0){
             let prevTemp = toDoArr[newArr - 1];
             toDoArr[newArr - 1] = toDoArr[newArr];
             toDoArr[newArr] = prevTemp;
             UI.displayData();
             Storage.addToStorage(toDoArr);
-        } catch { console.log('oops, it\'s already at the top of the list') };
+    }
+        
     }
     if (e.target.classList.contains('down')) {
         let p = e.target.parentElement.parentElement.firstElementChild;
         const btnId = e.target.dataset.id;
         const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
-        try {
-            let prevTemp = toDoArr[newArr + 1]; 
+        if(newArr+1 <toDoArr.length){
+            let prevTemp = toDoArr[newArr + 1];
             toDoArr[newArr + 1] = toDoArr[newArr];
             toDoArr[newArr] = prevTemp;
             UI.displayData();
             Storage.addToStorage(toDoArr);
-        } catch { console.log('oops, it\'s already at the bottom of the list') };
+    }
     }
 });
 deleteAll.addEventListener('click', (e) => {
