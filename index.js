@@ -88,6 +88,7 @@ list.addEventListener('click', (e) => {
         if (iconChange) {
             p.setAttribute('contenteditable', 'true');
             p.focus();
+            p.style.opacity = '50%'
             e.target.textContent = "Save";
             iconChange = !iconChange
             
@@ -96,9 +97,11 @@ list.addEventListener('click', (e) => {
         } else {
             e.target.textContent = "✍️";
             p.style.color = 'black';
+            p.style.opacity = '100%'
             p.removeAttribute('contenteditable')
             const newArr = toDoArr.findIndex((item)=>item.id=== +btnId||'');
             toDoArr[newArr].toDo = p.textContent;
+            Storage.addToStorage(toDoArr)
             iconChange = !iconChange
             
 
