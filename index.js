@@ -26,7 +26,7 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
     id++;
     const toDo = new ToDo(id, input.value);
-    toDoArr.push(toDo);
+    toDoArr.unshift(toDo);
 
     UI.displayData();
     UI.clear();
@@ -47,6 +47,9 @@ class UI {
             return `<div class="todo">
                         <p class='entryText'>${entry.toDo}</p>
                         <div class='icons'>
+
+                        <span class='up' data-id=${entry.id}>☝️</span>
+                        <span class='down' data-id=${entry.id}>👇</span>
                         <span class='edit' data-id=${entry.id}>✍️</span>
                         <span class='remove' data-id=${entry.id}>🗑️</span>
                         </div>
@@ -91,26 +94,46 @@ list.addEventListener('click', (e) => {
             p.style.opacity = '50%'
             e.target.textContent = "Save";
             iconChange = !iconChange
-            
-            
-           
+
+
+
         } else {
             e.target.textContent = "✍️";
             p.style.color = 'black';
             p.style.opacity = '100%'
             p.removeAttribute('contenteditable')
-            const newArr = toDoArr.findIndex((item)=>item.id=== +btnId||'');
+            const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
             toDoArr[newArr].toDo = p.textContent;
             Storage.addToStorage(toDoArr)
             iconChange = !iconChange
-            
+
 
         }
-
     }
-    
-
-
+    if (e.target.classList.contains('up')) {
+        let p = e.target.parentElement.parentElement.firstElementChild;
+        const btnId = e.target.dataset.id;
+        const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
+        try {
+            let prevTemp = toDoArr[newArr - 1];
+            toDoArr[newArr - 1] = toDoArr[newArr];
+            toDoArr[newArr] = prevTemp;
+            UI.displayData();
+            Storage.addToStorage(toDoArr);
+        } catch { console.log('oops, it\'s already at the top of the list') };
+    }
+    if (e.target.classList.contains('down')) {
+        let p = e.target.parentElement.parentElement.firstElementChild;
+        const btnId = e.target.dataset.id;
+        const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
+        try {
+            let prevTemp = toDoArr[newArr + 1];
+            toDoArr[newArr + 1] = toDoArr[newArr];
+            toDoArr[newArr] = prevTemp;
+            UI.displayData();
+            Storage.addToStorage(toDoArr);
+        } catch { console.log('oops, it\'s already at the bottom of the list') };
+    }
 });
 deleteAll.addEventListener('click', (e) => {
     toDoArr = [];
