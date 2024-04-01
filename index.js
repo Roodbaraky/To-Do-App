@@ -127,7 +127,7 @@ list.addEventListener('click', (e) => {
         const btnId = e.target.dataset.id;
         const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
         try {
-            let prevTemp = toDoArr[newArr + 1];
+            let prevTemp = toDoArr[newArr + 1]; 
             toDoArr[newArr + 1] = toDoArr[newArr];
             toDoArr[newArr] = prevTemp;
             UI.displayData();
