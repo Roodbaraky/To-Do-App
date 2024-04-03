@@ -77,25 +77,52 @@ window.addEventListener("DOMContentLoaded", () => {
     UI.displayData();
 });
 let draggedItemIndex = null;
+let touchStartPosition = null;
+let touchPlaceholder = null;
 
-list.addEventListener('dragstart', (e) => {
+list.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    touchStartPosition = touch.clientY;
     draggedItemIndex = +e.target.getAttribute('data-index');
+    const draggedItem = e.target;
+    touchPlaceholder = document.createElement('div');
+    touchPlaceholder.classList.add('touch-placeholder');
+    touchPlaceholder.style.height = draggedItem.offsetHeight + 'px';
+    draggedItem.style.opacity = '0.5';
+    draggedItem.parentNode.insertBefore(touchPlaceholder, draggedItem.nextSibling);
 });
 
-list.addEventListener('dragover', (e) => {
+list.addEventListener('touchmove', (e) => {
     e.preventDefault();
+    if (draggedItemIndex !== null) {
+        const touch = e.touches[0];
+        const deltaY = touch.clientY - touchStartPosition;
+        touchPlaceholder.style.transform = `translateY(${deltaY}px)`;
+    }
 });
 
-list.addEventListener('drop', (e) => {
-    const droppedItemIndex = +e.target.getAttribute('data-index');
-    if (draggedItemIndex !== null && droppedItemIndex !== null && draggedItemIndex !== droppedItemIndex) {
-        const draggedItem = toDoArr[draggedItemIndex];
-        toDoArr.splice(draggedItemIndex, 1);
-        toDoArr.splice(droppedItemIndex, 0, draggedItem);
-        UI.displayData();
-        Storage.addToStorage(toDoArr);
+list.addEventListener('touchend', (e) => {
+    if (draggedItemIndex !== null) {
+        const touchEndPosition = e.changedTouches[0].clientY;
+        const deltaY = touchEndPosition - touchStartPosition;
+        const draggedItem = list.querySelector(`[data-index="${draggedItemIndex}"]`);
+        if (draggedItem) {
+            draggedItem.style.opacity = '1';
+        }
+        touchPlaceholder.remove();
+        if (Math.abs(deltaY) > 50) {
+            const draggedItem = toDoArr[draggedItemIndex];
+            const droppedItemIndex = draggedItemIndex + (deltaY > 0 ? 1 : -1);
+            if (draggedItemIndex !== null && droppedItemIndex >= 0 && droppedItemIndex < toDoArr.length && draggedItemIndex !== droppedItemIndex) {
+                toDoArr.splice(draggedItemIndex, 1);
+                toDoArr.splice(droppedItemIndex, 0, draggedItem);
+                UI.displayData();
+                Storage.addToStorage(toDoArr);
+            }
+        }
     }
     draggedItemIndex = null;
+    touchStartPosition = null;
 });
 
 let iconChange = true;
