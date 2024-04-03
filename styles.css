@@ -63,6 +63,11 @@ button {
 .deleteAll {
     display: flex;
     width: auto;
+    opacity: 50%;
+}
+.deleteAll:hover{
+    opacity: 100%;
+    transition-duration: 0.5s;
 }
 
 .entryText {

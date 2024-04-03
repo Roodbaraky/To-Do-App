@@ -43,18 +43,19 @@ class ToDo {
 
 class UI {
     static displayData() {
-        let displayData = toDoArr.map((entry) => {
-            return `<div class="todo">
+        let displayData = toDoArr.map((entry, index) => {
+            return `<div class="todo" draggable="true" data-index = ${index}> 
                         <p class='entryText'>${entry.toDo}</p>
                         <div class='icons'>
 
-                        <span class='up' data-id=${entry.id}>☝️</span>
-                        <span class='down' data-id=${entry.id}>👇</span>
+                        
                         <span class='edit' data-id=${entry.id}>✍️</span>
                         <span class='remove' data-id=${entry.id}>🗑️</span>
                         </div>
                         
                     </div>`;
+                    /*<span class='up' data-id=${entry.id}>☝️</span>
+                        <span class='down' data-id=${entry.id}>👇</span>*/
         });
         if (toDoArr.length > 0) {
             deleteAll.innerHTML = `Delete All 🚮`
@@ -74,6 +75,27 @@ class UI {
 
 window.addEventListener("DOMContentLoaded", () => {
     UI.displayData();
+});
+let draggedItemIndex = null;
+
+list.addEventListener('dragstart', (e) => {
+    draggedItemIndex = +e.target.getAttribute('data-index');
+});
+
+list.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+list.addEventListener('drop', (e) => {
+    const droppedItemIndex = +e.target.getAttribute('data-index');
+    if (draggedItemIndex !== null && droppedItemIndex !== null && draggedItemIndex !== droppedItemIndex) {
+        const draggedItem = toDoArr[draggedItemIndex];
+        toDoArr.splice(draggedItemIndex, 1);
+        toDoArr.splice(droppedItemIndex, 0, draggedItem);
+        UI.displayData();
+        Storage.addToStorage(toDoArr);
+    }
+    draggedItemIndex = null;
 });
 
 let iconChange = true;
@@ -110,31 +132,31 @@ list.addEventListener('click', (e) => {
 
         }
     }
-    if (e.target.classList.contains('up')) {
-        let p = e.target.parentElement.parentElement.firstElementChild;
-        const btnId = e.target.dataset.id;
-        const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
-        if(newArr-1 >=0){
-            let prevTemp = toDoArr[newArr - 1];
-            toDoArr[newArr - 1] = toDoArr[newArr];
-            toDoArr[newArr] = prevTemp;
-            UI.displayData();
-            Storage.addToStorage(toDoArr);
-    }
+    // if (e.target.classList.contains('up')) {
+    //     let p = e.target.parentElement.parentElement.firstElementChild;
+    //     const btnId = e.target.dataset.id;
+    //     const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
+    //     if(newArr-1 >=0){
+    //         let prevTemp = toDoArr[newArr - 1];
+    //         toDoArr[newArr - 1] = toDoArr[newArr];
+    //         toDoArr[newArr] = prevTemp;
+    //         UI.displayData();
+    //         Storage.addToStorage(toDoArr);
+    // }
         
-    }
-    if (e.target.classList.contains('down')) {
-        let p = e.target.parentElement.parentElement.firstElementChild;
-        const btnId = e.target.dataset.id;
-        const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
-        if(newArr+1 <toDoArr.length){
-            let prevTemp = toDoArr[newArr + 1];
-            toDoArr[newArr + 1] = toDoArr[newArr];
-            toDoArr[newArr] = prevTemp;
-            UI.displayData();
-            Storage.addToStorage(toDoArr);
-    }
-    }
+    // }
+    // if (e.target.classList.contains('down')) {
+    //     let p = e.target.parentElement.parentElement.firstElementChild;
+    //     const btnId = e.target.dataset.id;
+    //     const newArr = toDoArr.findIndex((item) => item.id === +btnId || '');
+    //     if(newArr+1 <toDoArr.length){
+    //         let prevTemp = toDoArr[newArr + 1];
+    //         toDoArr[newArr + 1] = toDoArr[newArr];
+    //         toDoArr[newArr] = prevTemp;
+    //         UI.displayData();
+    //         Storage.addToStorage(toDoArr);
+    // }
+    // }
 });
 deleteAll.addEventListener('click', (e) => {
     toDoArr = [];
